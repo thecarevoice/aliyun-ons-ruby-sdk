@@ -11,22 +11,22 @@
 Producer::Producer(Rice::String accessKey, Rice::String secretKey, Rice::String producerId, Rice::Hash options)
 {
   ons::ONSFactoryProperty factoryInfo;
-  factoryInfo.setFactoryProperty(ons::ONSFactoryProperty::AccessKey,   accessKey.str());
-  factoryInfo.setFactoryProperty(ons::ONSFactoryProperty::SecretKey,   secretKey.str());
-  factoryInfo.setFactoryProperty(ons::ONSFactoryProperty::ProducerId, producerId.str());
+  factoryInfo.setFactoryProperty(ons::ONSFactoryProperty::AccessKey,   accessKey.c_str());
+  factoryInfo.setFactoryProperty(ons::ONSFactoryProperty::SecretKey,   secretKey.c_str());
+  factoryInfo.setFactoryProperty(ons::ONSFactoryProperty::ProducerId, producerId.c_str());
 
   Rice::Object namesrvAddr = options.call("[]", Rice::String("namesrv_addr"));
   if (!namesrvAddr) { namesrvAddr = options.call("[]", Rice::Symbol("namesrv_addr")); }
-  if (namesrvAddr) { factoryInfo.setFactoryProperty(ons::ONSFactoryProperty::NAMESRV_ADDR, ((Rice::String)namesrvAddr).str()); }
+  if (namesrvAddr) { factoryInfo.setFactoryProperty(ons::ONSFactoryProperty::NAMESRV_ADDR, ((Rice::String)namesrvAddr).c_str()); }
 
   Rice::Object onsAddr = options.call("[]", Rice::String("ons_addr"));
   if (!onsAddr) { onsAddr = options.call("[]", Rice::Symbol("ons_addr")); }
-  if (onsAddr) { factoryInfo.setFactoryProperty(ons::ONSFactoryProperty::ONSAddr, ((Rice::String)onsAddr).str()); }
+  if (onsAddr) { factoryInfo.setFactoryProperty(ons::ONSFactoryProperty::ONSAddr, ((Rice::String)onsAddr).c_str()); }
 
   Rice::Object sendTimeout = options.call("[]", Rice::String("send_timeout"));
   if (!sendTimeout) { sendTimeout = options.call("[]", Rice::Symbol("send_timeout")); }
   if (sendTimeout.rb_type() == T_FIXNUM || sendTimeout.rb_type() == T_BIGNUM) { sendTimeout = sendTimeout.to_s(); }
-  if (sendTimeout) { factoryInfo.setFactoryProperty(ons::ONSFactoryProperty::SendMsgTimeoutMillis, ((Rice::String)sendTimeout).str()); }
+  if (sendTimeout) { factoryInfo.setFactoryProperty(ons::ONSFactoryProperty::SendMsgTimeoutMillis, ((Rice::String)sendTimeout).c_str()); }
 
   this->onsProducer = ons::ONSFactory::getInstance()->createProducer(factoryInfo);
 }
@@ -34,7 +34,7 @@ Producer::Producer(Rice::String accessKey, Rice::String secretKey, Rice::String 
 Rice::String Producer::sendMessage(Rice::String topic, Rice::String tag, Rice::String body, Rice::String key)
 {
   ons::Message message(topic.str(), tag.str(), body.str());
-  if (key.length() != 0) { message.setKey(key.str()); }
+  if (key.length() != 0) { message.setKey(key.c_str()); }
 
   ons::SendResultONS sendResult = this->onsProducer->send(message);
   return sendResult.getMessageId();
@@ -43,7 +43,7 @@ Rice::String Producer::sendMessage(Rice::String topic, Rice::String tag, Rice::S
 Rice::String Producer::sendTimerMessage(Rice::String topic, Rice::String tag, Rice::String body, Rice::Object deliverTimestamp, Rice::String key)
 {
   ons::Message message(topic.str(), tag.str(), body.str());
-  if (key.length() != 0) { message.setKey(key.str()); }
+  if (key.length() != 0) { message.setKey(key.c_str()); }
 
   long long timestamp = NUM2LL(deliverTimestamp.value());
   if (timestamp != 0) { message.setStartDeliverTime(timestamp); }

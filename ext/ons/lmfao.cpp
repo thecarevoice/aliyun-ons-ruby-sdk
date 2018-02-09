@@ -55,8 +55,8 @@ callback_t *g_callback_queue_pop()
 bool mLMFAO_call(VALUE handler, ons::Message* message)
 {
   listener_consume_args_t args = {
-    .handler = handler,
-    .message = message
+    handler,
+    message
   };
   return lmfao_callback((void *) &args);
 }
@@ -125,11 +125,11 @@ VALUE LMFAO_handle_callback(void *cb)
   ons::Message *message = args->message;
   VALUE proc = args->handler;
   VALUE hash = rb_hash_new();
-  rb_hash_aset(hash, ID2SYM(rb_intern("id")),    rb_str_new2(message->getMsgID().c_str()));
-  rb_hash_aset(hash, ID2SYM(rb_intern("topic")), rb_str_new2(message->getTopic().c_str()));
-  rb_hash_aset(hash, ID2SYM(rb_intern("tag")),   rb_str_new2(message->getTag().c_str()));
-  rb_hash_aset(hash, ID2SYM(rb_intern("body")),  rb_str_new2(message->getBody().c_str()));
-  rb_hash_aset(hash, ID2SYM(rb_intern("key")),   rb_str_new2(message->getKey().c_str()));
+  rb_hash_aset(hash, ID2SYM(rb_intern("id")),    rb_str_new2(message->getMsgID()));
+  rb_hash_aset(hash, ID2SYM(rb_intern("topic")), rb_str_new2(message->getTopic()));
+  rb_hash_aset(hash, ID2SYM(rb_intern("tag")),   rb_str_new2(message->getTag()));
+  rb_hash_aset(hash, ID2SYM(rb_intern("body")),  rb_str_new2(message->getBody()));
+  rb_hash_aset(hash, ID2SYM(rb_intern("key")),   rb_str_new2(message->getKey()));
   rb_hash_aset(hash, ID2SYM(rb_intern("reconsume_times")),   INT2NUM(message->getReconsumeTimes()));
   rb_hash_aset(hash, ID2SYM(rb_intern("store_timestamp")),   LL2NUM(message->getStoreTimestamp()));
   rb_hash_aset(hash, ID2SYM(rb_intern("deliver_timestamp")), LL2NUM(message->getStartDeliverTime()));
@@ -216,8 +216,8 @@ void stop_waiting_for_callback_signal(void *w)
 VALUE LMFAO_event_thread(void *unused)
 {
   callback_waiting_t waiting = {
-    .callback = NULL,
-    .abort    = false
+    NULL,
+    false
   };
 
   while (waiting.abort == false)
